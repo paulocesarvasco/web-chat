@@ -1,5 +1,7 @@
 package chat
 
+import "log"
+
 type ChatRoom struct {
 	Clients    map[*Client]bool
 	Broadcast  chan []byte
@@ -25,6 +27,7 @@ func (room *ChatRoom) Run() {
 			if _, ok := room.Clients[client]; ok {
 				delete(room.Clients, client)
 				close(client.Send)
+				log.Printf("client disconnected: %s\n", client.Conn.LocalAddr().String())
 			}
 		case message := <-room.Broadcast:
 			for client := range room.Clients {
@@ -33,6 +36,7 @@ func (room *ChatRoom) Run() {
 				default:
 					close(client.Send)
 					delete(room.Clients, client)
+					log.Printf("client disconnected: %s\n", client.Conn.LocalAddr().String())
 				}
 			}
 		}
