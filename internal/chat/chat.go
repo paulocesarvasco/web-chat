@@ -38,7 +38,3 @@ func (room *ChatRoom) Run() {
 		}
 	}
 }
-
-func (room *ChatRoom) BroadcastMessage(message []byte) {
-	room.Broadcast <- message
-}
