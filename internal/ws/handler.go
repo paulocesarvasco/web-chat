@@ -26,13 +26,6 @@ func HandleConnections(w http.ResponseWriter, r *http.Request, room *chat.ChatRo
 
 	room.Register <- client
 
-	// Ensure that the client is unregistered when they disconnect
-	defer func() {
-		room.Unregister <- client
-		ws.Close()
-	}()
-
-	// Start goroutines to handle reading and writing messages for this client
 	go client.ReadMessages(room)
 	go client.WriteMessages()
 }
