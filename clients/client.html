@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Chat</title>
+</head>
+<body>
+    <h1>WebSocket Chat</h1>
+    <div>
+        <textarea id="chat-log" cols="100" rows="20" readonly></textarea><br>
+        <input type="text" id="message" placeholder="Enter message" autofocus>
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <script>
+        // Open a WebSocket connection
+        const socket = new WebSocket('ws://192.168.1.55:8080/chat');
+
+        // Log messages received from the server
+        socket.onmessage = function(event) {
+            const chatLog = document.getElementById('chat-log');
+            chatLog.value += event.data + '\n';
+        };
+
+        // Function to send a message to the server
+        function sendMessage() {
+            const messageInput = document.getElementById('message');
+            const message = messageInput.value;
+
+            if (message) {
+                // Send the message to the server
+                socket.send(message);
+                messageInput.value = '';  // Clear input after sending
+            }
+        }
+    </script>
+</body>
+</html>
