@@ -1,4 +1,4 @@
-package autorization
+package authorization
 
 import (
 	"encoding/base64"
