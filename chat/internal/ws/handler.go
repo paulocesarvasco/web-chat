@@ -13,6 +13,16 @@ var upgrader = websocket.Upgrader{
 }
 
 func HandleConnections(w http.ResponseWriter, r *http.Request, room *chat.ChatRoom) {
+	req, _ := http.NewRequest(http.MethodGet, "http://auth_service:8081/auth", nil)
+	req.SetBasicAuth("user_test", "user_pass")
+	c := http.Client{}
+	res, err := c.Do(req)
+	if err != nil {
+		log.Print("error request auth: ", err)
+	} else {
+		log.Print(res.StatusCode)
+	}
+
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
