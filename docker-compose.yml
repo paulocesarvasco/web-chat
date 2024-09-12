@@ -9,6 +9,19 @@ services:
     expose:
       - "8081"
 
+  database:
+    image: mysql:latest
+    container_name: mysql
+    environment:
+      MYSQL_DATABASE: test_db
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: user
+      MYSQL_PASSWORD: pass
+    ports:
+      - "3306"
+    networks:
+      - internal_network
+
   websocket_chat:
     build:
       context: chat
@@ -18,19 +31,7 @@ services:
       - "8080:8080"
     depends_on:
       - auth_service
-      - mysql
-    networks:
-      - internal_network
-
-  database:
-    image: mysql:latest
-    container_name: mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_USER: user
-      MYSQL_PASSWORD: pass
-    ports:
-      - "3306"
+      - database
     networks:
       - internal_network
 
