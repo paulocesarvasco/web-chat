@@ -1,9 +1,9 @@
 package ws
 
 import (
-	"chat/internal/chat"
 	"log"
 	"net/http"
+	"web-chat/chat/internal/chat"
 
 	"github.com/gorilla/websocket"
 )
