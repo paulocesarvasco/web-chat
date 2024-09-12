@@ -1,0 +1,26 @@
+services:
+  auth_service:
+    build:
+      context: authorization
+      dockerfile: Dockerfile
+    container_name: auth_service
+    networks:
+      - internal_network
+    expose:
+      - "8081"  # Expose the port only to the internal network, not to the outside world
+
+  websocket_chat:
+    build:
+      context: chat
+      dockerfile: Dockerfile
+    container_name: websocket_chat
+    ports:
+      - "8080:8080"  # Expose WebSocket service to the public
+    depends_on:
+      - auth_service
+    networks:
+      - internal_network  # Connect to the internal network to communicate with auth_service
+
+networks:
+  internal_network:
+    driver: bridge  # Default bridge network (internal)
