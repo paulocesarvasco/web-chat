@@ -7,7 +7,7 @@ services:
     networks:
       - internal_network
     expose:
-      - "8081"  # Expose the port only to the internal network, not to the outside world
+      - "8081"
 
   websocket_chat:
     build:
@@ -15,12 +15,25 @@ services:
       dockerfile: Dockerfile
     container_name: websocket_chat
     ports:
-      - "8080:8080"  # Expose WebSocket service to the public
+      - "8080:8080"
     depends_on:
       - auth_service
+      - mysql
     networks:
-      - internal_network  # Connect to the internal network to communicate with auth_service
+      - internal_network
+
+  database:
+    image: mysql:latest
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: user
+      MYSQL_PASSWORD: pass
+    ports:
+      - "3306"
+    networks:
+      - internal_network
 
 networks:
   internal_network:
-    driver: bridge  # Default bridge network (internal)
+    driver: bridge
