@@ -11,7 +11,7 @@ func main() {
 	room := chat.NewChatRoom()
 	go room.Run()
 
-	fs := http.FileServer(http.Dir("./clients"))
+	fs := http.FileServer(http.Dir("./static"))
 	http.Handle("/", fs)
 
 	http.HandleFunc("/chat", func(w http.ResponseWriter, r *http.Request) {
