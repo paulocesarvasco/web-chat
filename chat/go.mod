@@ -1,4 +1,4 @@
-module web-chat
+module chat
 
 go 1.23
 

@@ -1,10 +1,10 @@
 package main
 
 import (
+	"chat/internal/chat"
+	"chat/internal/ws"
 	"log"
 	"net/http"
-	"web-chat/internal/chat"
-	"web-chat/internal/ws"
 )
 
 func main() {
