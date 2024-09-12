@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 	"strings"
+
+	"github.com/paulocesarvasco/web-chat/authorization/internal/database"
 )
 
 func ValidateCredentials(w http.ResponseWriter, r *http.Request) {
@@ -31,4 +33,11 @@ func ValidateCredentials(w http.ResponseWriter, r *http.Request) {
 	username, password := pair[0], pair[1]
 	log.Println(username)
 	log.Println(password)
+
+	log.Println("trying connection with db")
+
+	_, err = database.CreateMySQLConnection()
+	if err != nil {
+		log.Fatal(err)
+	}
 }
