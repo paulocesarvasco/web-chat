@@ -1,4 +1,4 @@
-module chat
+module github.com/paulocesarvasco/web-chat/chat
 
 go 1.23
 
