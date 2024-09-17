@@ -2,14 +2,11 @@ package authorization
 
 import (
 	"encoding/base64"
-	"log"
 	"net/http"
 	"strings"
-
-	"github.com/paulocesarvasco/web-chat/authorization/internal/database"
 )
 
-func ValidateCredentials(w http.ResponseWriter, r *http.Request) {
+func (a *api) ValidateCredentials(w http.ResponseWriter, r *http.Request) {
 	auth := r.Header.Get("Authorization")
 	if auth == "" {
 		w.Header().Set("WWW-Authenticate", `Basic realm="restricted"`)
@@ -31,13 +28,12 @@ func ValidateCredentials(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	username, password := pair[0], pair[1]
-	log.Println(username)
-	log.Println(password)
-
-	log.Println("trying connection with db")
-
-	_, err = database.CreateMySQLConnection()
+	isValid, err := a.CheckClientPassword(username, password)
 	if err != nil {
-		log.Fatal(err)
+		http.Error(w, "Failed to validate credentials", http.StatusInternalServerError)
+		return
+	}
+	if !isValid {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 	}
 }
