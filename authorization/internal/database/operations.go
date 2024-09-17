@@ -13,7 +13,12 @@ func (c *client) CreateClient(client resources.Client) error {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(client.Email, client.Password, client.Name, client.Username)
+	hashedPassword, err := hashPassword(client.Password)
+	if err != nil {
+		return fmt.Errorf("failed to  hash password: %v", err)
+	}
+
+	_, err = stmt.Exec(client.Email, hashedPassword, client.Name, client.Username)
 	if err != nil {
 		return fmt.Errorf("failed to insert client: %v", err)
 	}

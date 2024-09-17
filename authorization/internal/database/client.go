@@ -7,9 +7,11 @@ import (
 	"os"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/paulocesarvasco/web-chat/authorization/internal/resources"
 )
 
 type Client interface {
+	CreateClient(resources.Client) error
 }
 
 type client struct {
