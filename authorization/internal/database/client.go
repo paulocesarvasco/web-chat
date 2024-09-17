@@ -9,7 +9,14 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func CreateMySQLConnection() (*sql.DB, error) {
+type Client interface {
+}
+
+type client struct {
+	db *sql.DB
+}
+
+func NewClient() (Client, error) {
 	dbHost := os.Getenv("DB_HOST")
 	dbPort := os.Getenv("DB_PORT")
 	dbUser := os.Getenv("DB_USER")
@@ -28,5 +35,5 @@ func CreateMySQLConnection() (*sql.DB, error) {
 	}
 
 	log.Println("Successfully connected to the MySQL database")
-	return db, nil
+	return &client{db: db}, nil
 }
