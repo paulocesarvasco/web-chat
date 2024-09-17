@@ -1,4 +1,4 @@
-package database
+package authorization
 
 import (
 	"crypto/rand"
