@@ -1,6 +1,7 @@
 package database
 
 import (
+	"database/sql"
 	"fmt"
 
 	"github.com/paulocesarvasco/web-chat/authorization/internal/resources"
@@ -12,15 +13,23 @@ func (c *client) CreateClient(client resources.Client) error {
 		return fmt.Errorf("failed to prepare statement: %v", err)
 	}
 	defer stmt.Close()
-
-	hashedPassword, err := hashPassword(client.Password)
-	if err != nil {
-		return fmt.Errorf("failed to  hash password: %v", err)
-	}
-
-	_, err = stmt.Exec(client.Email, hashedPassword, client.Name, client.Username)
+	_, err = stmt.Exec(client.Email, client.Password, client.Name, client.Username)
 	if err != nil {
 		return fmt.Errorf("failed to insert client: %v", err)
 	}
 	return nil
+}
+
+func (c *client) GetClientByUsername(username string) (resources.Client, error) {
+	var client resources.Client
+	query := "SELECT email, name, password, username FROM users WHERE username = ?"
+	err := c.db.QueryRow(query, username).Scan(&client.Email, &client.Name, &client.Password, &client.Username)
+	switch err {
+	case nil:
+		return client, nil
+	case sql.ErrNoRows:
+		return resources.Client{}, fmt.Errorf("usuário não encontrado")
+	default:
+		return resources.Client{}, fmt.Errorf("erro ao buscar o usuário: %v", err)
+	}
 }

@@ -12,6 +12,7 @@ import (
 
 type Client interface {
 	CreateClient(resources.Client) error
+	GetClientByUsername(username string) (resources.Client, error)
 }
 
 type client struct {
