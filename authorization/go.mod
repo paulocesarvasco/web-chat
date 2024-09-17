@@ -5,6 +5,7 @@ go 1.23.1
 require (
 	github.com/coreos/go-oidc/v3 v3.11.0
 	github.com/go-sql-driver/mysql v1.8.1
+	github.com/joho/godotenv v1.5.1
 	golang.org/x/oauth2 v0.23.0
 )
 
