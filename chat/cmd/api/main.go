@@ -16,8 +16,8 @@ func main() {
 
 	r := chi.NewMux()
 
-	fs := http.FileServer(http.Dir("./static"))
-	r.Handle("/", fs)
+	fs := http.FileServer(http.Dir("/static"))
+	r.Handle("/*", fs)
 	r.HandleFunc("/chat", auth.ValidateCredentials(
 		func(w http.ResponseWriter, r *http.Request) {
 			ws.HandleConnections(w, r, room)
