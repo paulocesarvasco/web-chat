@@ -6,6 +6,7 @@ import (
 	"crypto/subtle"
 	"encoding/hex"
 	"fmt"
+	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
 	"golang.org/x/crypto/pbkdf2"
@@ -24,14 +25,13 @@ func hashPassword(password string) (string, error) {
 		return "", fmt.Errorf("failed to generate salt: %v", err)
 	}
 	hash := pbkdf2.Key([]byte(password), salt, Iterations, KeyLength, sha256.New)
-	return fmt.Sprintf("%x:%x", salt, hash), nil // Store as "salt:hash"
+	return fmt.Sprintf("%s:%s", salt, hash), nil
 }
 
 func verifyPassword(storedPassword, providedPassword string) (bool, error) {
-	parts := [2]string{}
-	_, err := fmt.Sscanf(storedPassword, "%x:%x", &parts[0], &parts[1])
-	if err != nil {
-		return false, fmt.Errorf("failed to parse stored password: %v", err)
+	parts := strings.Split(storedPassword, ":")
+	if len(parts) != 2 {
+		return false, fmt.Errorf("invalid stored value format")
 	}
 
 	salt, err := hex.DecodeString(parts[0])

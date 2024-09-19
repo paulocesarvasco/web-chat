@@ -31,6 +31,7 @@ func NewAPI() API {
 	}
 	r := chi.NewRouter()
 	r.Post("/login", api.ValidateCredentials)
+	r.Post("/create", api.CreateClient)
 	api.Mux = r
 
 	return &api
