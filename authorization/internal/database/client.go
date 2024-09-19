@@ -3,7 +3,6 @@ package database
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"os"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -32,11 +31,5 @@ func NewClient() (Client, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error opening database connection: %w", err)
 	}
-
-	if err := db.Ping(); err != nil {
-		return nil, fmt.Errorf("error pinging database: %w", err)
-	}
-
-	log.Println("Successfully connected to the MySQL database")
 	return &client{db: db}, nil
 }
