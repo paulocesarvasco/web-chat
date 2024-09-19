@@ -2,14 +2,15 @@ package authorization
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"log"
 	"net/http"
 	"strings"
 
-	"github.com/paulocesarvasco/web-chat/authorization/internal/database"
+	"github.com/paulocesarvasco/web-chat/authorization/internal/resources"
 )
 
-func ValidateCredentials(w http.ResponseWriter, r *http.Request) {
+func (a *api) ValidateCredentials(w http.ResponseWriter, r *http.Request) {
 	auth := r.Header.Get("Authorization")
 	if auth == "" {
 		w.Header().Set("WWW-Authenticate", `Basic realm="restricted"`)
@@ -31,13 +32,27 @@ func ValidateCredentials(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	username, password := pair[0], pair[1]
-	log.Println(username)
-	log.Println(password)
-
-	log.Println("trying connection with db")
-
-	_, err = database.CreateMySQLConnection()
+	isValid, err := a.CheckClientPassword(username, password)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		http.Error(w, "Failed to validate credentials", http.StatusInternalServerError)
+		return
+	}
+	if !isValid {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+	}
+}
+
+func (a *api) CreateClient(w http.ResponseWriter, r *http.Request) {
+	var clientInfo resources.Client
+	err := json.NewDecoder(r.Body).Decode(&clientInfo)
+	if err != nil {
+		http.Error(w, "failed to decode payload", http.StatusInternalServerError)
+		return
+	}
+	err = a.auth.CreateNewClient(clientInfo)
+	if err != nil {
+		http.Error(w, "failed to create client", http.StatusInternalServerError)
+		return
 	}
 }

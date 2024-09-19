@@ -6,17 +6,21 @@ services:
     container_name: auth_service
     networks:
       - internal_network
-    expose:
-      - "8081"
+    ports:
+      - "8081:8081"
+    depends_on:
+      - database
 
   database:
     image: mysql:latest
     container_name: mysql
     environment:
-      MYSQL_DATABASE: test_db
+      MYSQL_DATABASE: web_chat_db
       MYSQL_ROOT_PASSWORD: root
       MYSQL_USER: user
       MYSQL_PASSWORD: pass
+    volumes:
+      - ./init/mysql:/docker-entrypoint-initdb.d
     ports:
       - "3306"
     networks:
@@ -31,7 +35,6 @@ services:
       - "8080:8080"
     depends_on:
       - auth_service
-      - database
     networks:
       - internal_network
 
