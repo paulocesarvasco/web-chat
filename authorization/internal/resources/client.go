@@ -1,8 +1,8 @@
 package resources
 
 type Client struct {
-	Email    string
-	Password string
-	Name     string
-	Username string
+	Email    string `json:"email"`
+	Password string `json:"password"`
+	Name     string `json:"name"`
+	Username string `json:"username"`
 }
