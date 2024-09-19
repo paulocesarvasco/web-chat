@@ -1,17 +1,20 @@
 package main
 
 import (
-	"github.com/paulocesarvasco/web-chat/authorization/internal/authorization"
 	"log"
 	"net/http"
+
+	"github.com/joho/godotenv"
+	"github.com/paulocesarvasco/web-chat/authorization/internal/authorization"
 )
 
 func main() {
-	http.HandleFunc("/auth", func(w http.ResponseWriter, r *http.Request) {
-		authorization.ValidateCredentials(w, r)
-	})
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
 	log.Println("Auth service started on :8081")
-	err := http.ListenAndServe(":8081", nil)
+	err = http.ListenAndServe(":8081", authorization.NewAPI().Engine())
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
