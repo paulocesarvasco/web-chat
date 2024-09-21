@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login with Token</title>
+    <script>
+        // Handle the form submission
+        function submitForm(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // Encode credentials in Base64 for Basic Auth
+            const credentials = btoa(username + ':' + password);
+
+            // Perform a POST request to the login endpoint with Authorization header
+            fetch('http://192.168.1.55:8080/server', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Basic ' + credentials, // Add credentials to Authorization header
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Login failed');
+                }
+                // Retrieve the token from the response headers
+                const token = response.headers.get('Authorization');
+                if (token) {
+                    // Store the token in localStorage
+                    localStorage.setItem('auth_token', token);
+
+                    // Redirect to the chat page
+                    window.location.href = '/chat.html';
+                } else {
+                    throw new Error('No token found in the response');
+                }
+            })
+            .catch(error => {
+                console.error('Error during login:', error);
+                alert('Login failed: ' + error);
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>Login</h1>
+    <form id="loginForm" onsubmit="submitForm(event)">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required><br><br>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br><br>
+
+        <button type="submit">Login</button>
+    </form>
+</body>
+</html>
