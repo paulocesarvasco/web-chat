@@ -18,7 +18,7 @@ func main() {
 
 	fs := http.FileServer(http.Dir("/static"))
 	r.Handle("/*", fs)
-	r.HandleFunc("/chat", auth.ValidateCredentials(
+	r.HandleFunc("/server", auth.ValidateCredentials(
 		func(w http.ResponseWriter, r *http.Request) {
 			ws.HandleConnections(w, r, room)
 		}))
