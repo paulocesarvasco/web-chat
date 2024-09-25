@@ -53,7 +53,7 @@ func (a *api) ValidateCredentials() http.HandlerFunc {
 
 func (a *api) ValidateToken() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		token := r.Header.Get("token")
+		token := r.Header.Get("Authorization")
 		if token == "" {
 			http.Error(w, "missed token", http.StatusUnauthorized)
 			return
