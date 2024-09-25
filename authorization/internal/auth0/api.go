@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -12,6 +13,7 @@ import (
 
 type API interface {
 	RequestAccessToken(ctx context.Context) (string, error)
+	ValidateToken(ctx context.Context, bearer string) (bool, error)
 }
 
 type api struct{}
@@ -39,6 +41,22 @@ func (a *api) RequestAccessToken(ctx context.Context) (string, error) {
 		return "", err
 	}
 	return tokenResponse.AccessToken, nil
+}
+
+func (a *api) ValidateToken(ctx context.Context, bearer string) (bool, error) {
+	url := fmt.Sprintf("https://%s/userinfo", os.Getenv("AUTH0_DOMAIN"))
+	req, err := requests.NewGetRequest(ctx, url)
+	if err != nil {
+		return false, fmt.Errorf("failed to create request: %v", err)
+	}
+	req.AddAuthorizationToken(bearer)
+	code, res := req.Execute()
+	if code != http.StatusOK {
+		log.Printf("%s", res)
+		return false, fmt.Errorf("%s", res)
+	}
+	log.Printf("%s", res)
+	return true, nil
 }
 
 func New() API {
