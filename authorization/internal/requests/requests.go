@@ -58,6 +58,10 @@ func (r *request) AddBasicAuth(user, pass string) {
 	r.request.SetBasicAuth(user, pass)
 }
 
+func (r *request) AddAuthorizationToken(token string) {
+	r.request.Header.Set("Authorization", token)
+}
+
 func (r *request) AddContentTypeJSON() {
 	r.request.Header.Set("Content-Type", "application/json")
 }
