@@ -10,8 +10,10 @@ import (
 )
 
 type API interface {
-	ValidateCredentials(w http.ResponseWriter, r *http.Request)
+	CreateClient() http.HandlerFunc
 	Engine() *chi.Mux
+	ValidateCredentials() http.HandlerFunc
+	ValidateToken() http.HandlerFunc
 }
 
 type api struct {
@@ -33,8 +35,9 @@ func NewAPI() API {
 		auth: authorizationService,
 	}
 	r := chi.NewRouter()
-	r.Post("/login", api.ValidateCredentials)
-	r.Post("/create", api.CreateClient)
+	r.Post("/login", api.ValidateCredentials())
+	r.Post("/create", api.CreateClient())
+	r.Get("/validate", api.ValidateToken())
 	api.Mux = r
 
 	return &api
