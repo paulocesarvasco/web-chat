@@ -21,9 +21,16 @@ type request struct {
 }
 
 func NewPostRequest(ctx context.Context, url string, payload any) (*request, error) {
-	rawPayload, err := json.Marshal(payload)
-	if err != nil {
-		return nil, err
+	var rawPayload []byte
+	switch p := payload.(type) {
+	case []byte:
+		rawPayload = p
+	default:
+		rp, err := json.Marshal(p)
+		if err != nil {
+			return nil, err
+		}
+		rawPayload = rp
 	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost,
 		url, bytes.NewReader(rawPayload))
