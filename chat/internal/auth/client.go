@@ -35,8 +35,7 @@ func ValidateCredentials(next http.HandlerFunc) http.HandlerFunc {
 			http.Error(w, "Authentication failed", http.StatusUnauthorized)
 			return
 		}
-		log.Printf("user [%s] authorized", authHeader)
-		w.Header().Set("Authorization", "vice")
-}
+		token := res.Header.Get("token")
+		w.Header().Set("Authorization", "Bearer "+token)
 	}
 }
