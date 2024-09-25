@@ -20,6 +20,17 @@ type request struct {
 	request *http.Request
 }
 
+func NewGetRequest(ctx context.Context, url string) (*request, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	return &request{
+		client:  defaultHTTPClient(),
+		request: req,
+	}, nil
+}
+
 func NewPostRequest(ctx context.Context, url string, payload any) (*request, error) {
 	var rawPayload []byte
 	switch p := payload.(type) {
