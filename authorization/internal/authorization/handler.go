@@ -49,6 +49,25 @@ func (a *api) ValidateCredentials(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("token", token)
 }
 
+func (a *api) ValidateToken() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		token := r.Header.Get("token")
+		if token == "" {
+			http.Error(w, "missed token", http.StatusUnauthorized)
+			return
+		}
+		isValid, err := a.API.ValidateToken(r.Context(), token)
+		if err != nil {
+			http.Error(w, "failed to validate token", http.StatusInternalServerError)
+			return
+		}
+		if !isValid {
+			http.Error(w, "invalid token", http.StatusUnauthorized)
+			return
+		}
+	}
+}
+
 func (a *api) CreateClient(w http.ResponseWriter, r *http.Request) {
 	var clientInfo resources.Client
 	err := json.NewDecoder(r.Body).Decode(&clientInfo)
