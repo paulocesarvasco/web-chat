@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/paulocesarvasco/web-chat/authorization/internal/auth0"
 	"github.com/paulocesarvasco/web-chat/authorization/internal/database"
 )
 
@@ -15,6 +16,7 @@ type API interface {
 
 type api struct {
 	auth
+	auth0.API
 	*chi.Mux
 }
 
@@ -27,6 +29,7 @@ func NewAPI() API {
 		db: databaseClient,
 	}
 	api := api{
+		API:  auth0.New(),
 		auth: authorizationService,
 	}
 	r := chi.NewRouter()

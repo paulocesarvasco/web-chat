@@ -41,6 +41,12 @@ func (a *api) ValidateCredentials(w http.ResponseWriter, r *http.Request) {
 	if !isValid {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 	}
+	token, err := a.RequestAccessToken(r.Context())
+	if err != nil {
+		log.Print("failed request access token", err)
+		http.Error(w, "failed request access token", http.StatusInternalServerError)
+	}
+	w.Header().Add("token", token)
 }
 
 func (a *api) CreateClient(w http.ResponseWriter, r *http.Request) {
