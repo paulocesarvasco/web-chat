@@ -47,12 +47,17 @@ func (r *request) AddBasicAuth(user, pass string) {
 	r.request.SetBasicAuth(user, pass)
 }
 
+func (r *request) AddContentTypeJSON() {
+	r.request.Header.Set("Content-Type", "application/json")
+}
+
 func (r *request) Execute() (int, []byte) {
 	res, err := r.client.Do(r.request)
 	if err != nil {
 		log.Print("failed to execute request: ", err)
 		return http.StatusInternalServerError, []byte(err.Error())
 	}
+	defer res.Body.Close()
 	rawPayload, err := io.ReadAll(res.Body)
 	if err != nil {
 		log.Print("failed to decode response payload: ", err)
