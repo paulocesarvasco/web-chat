@@ -1,4 +1,6 @@
-# ![Go Icon](https://golang.org/lib/godoc/images/go-logo-blue.svg) Web-Chat Project
+# Web-Chat Project
+
+<!-- ![Go Icon](https://golang.org/lib/godoc/images/go-logo-blue.svg) -->
 
 A real-time web chat application that leverages WebSocket for seamless communication between clients. This application includes a secure authentication flow and internal networking, ensuring that only authorized users can access the chat.
 
