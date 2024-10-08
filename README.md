@@ -1,39 +1,45 @@
-Here's an updated `README.md` with a reference to an architecture diagram image in the Architecture section. Be sure to replace `architecture.png` with the actual filename and location of your architecture diagram.
+# ![Go Icon](https://golang.org/lib/godoc/images/go-logo-blue.svg) Web-Chat Project
 
----
-
-# Web-Chat Project
-
-A real-time web chat application that uses WebSocket for seamless communication between clients. This application features a secure authentication flow to ensure that only authorized users can join the chat.
+A real-time web chat application that leverages WebSocket for seamless communication between clients. This application includes a secure authentication flow and internal networking, ensuring that only authorized users can access the chat.
 
 ## Overview
 
-The web-chat application allows users to join a chat room and communicate in real-time. Users authenticate by providing their credentials, which are validated by an authorization service. If authentication is successful, the connection is upgraded to a WebSocket connection for live messaging.
+The web-chat application allows users to join a chat room and communicate in real-time. Users authenticate by providing their credentials, which are validated by an authorization service. Upon successful authentication, the connection is upgraded to a WebSocket connection for live messaging.
 
 ## Features
 
-- **User Authentication**: Credentials are validated by an authorization service, which issues an access token.
-- **WebSocket Communication**: After authentication, the HTTP connection is upgraded to WebSocket for real-time chat functionality.
-- **Secure**: Only authenticated users can access the chat.
+- **User Authentication**: Credentials are securely validated by an authorization service.
+- **WebSocket Communication**: Real-time chat functionality is enabled by upgrading the HTTP connection to WebSocket after authentication.
+- **Internal Networking**: All services (Chat, Authorization, and SQL) communicate through an exclusive internal network, enhancing security.
+- **SQL Database**: Client information, including usernames and PBKDF2-opaque passwords, is stored securely in an SQL database.
+- **Secure**: Only authenticated users with valid tokens can access the chat.
 
 ## Architecture
 
-The overall architecture of the web-chat application includes a client interface, a server that manages WebSocket connections, and an authorization service that validates credentials. The architecture is outlined in the following diagram:
+The following diagram illustrates the architecture of the web-chat application:
 
 ![Architecture Diagram](images/web-chat-arch.png)
 
+### Components:
+
 1. **Client (Browser)**:
-   - The client provides a simple interface for users to enter their credentials and chat messages.
-   - It initially sends an HTTP request to the server with user credentials.
+   - The client interface allows users to enter their credentials and chat messages.
+   - It sends an HTTP request to the server with user credentials for authentication.
 
 2. **Server**:
-   - Receives HTTP requests and validates the credentials through the authorization service.
-   - If the credentials are valid, an access token is issued, and the connection is upgraded to WebSocket.
-   - Manages the WebSocket connections and broadcasts messages to all connected clients.
+   - Receives HTTP requests and interacts with the authorization service for credential validation.
+   - Once authenticated, it upgrades the connection to WebSocket, managing real-time chat messages and broadcasting them to all connected clients.
 
 3. **Authorization Service**:
-   - Responsible for validating user credentials.
-   - Generates and returns an access token if credentials are valid.
+   - Validates user credentials received from the server.
+   - If credentials are valid, it generates and returns an access token, allowing access to the chat service.
+
+4. **SQL Database**:
+   - Stores user credentials (username and password) using PBKDF2 for password hashing.
+   - Only accessible via the internal network, ensuring that sensitive data is securely stored and managed.
+
+5. **Internal Network**:
+   - An exclusive internal network for SQL, Chat, and Authorization services ensures isolated and secure communication between these services.
 
 ## How It Works
 
@@ -43,27 +49,26 @@ The overall architecture of the web-chat application includes a client interface
 
 ### 2. Server Validates Credentials
    - The server forwards the credentials to the authorization service.
-   - The authorization service verifies the credentials and, if valid, returns an access token to the server.
+   - The authorization service queries the SQL database to verify credentials. If valid, an access token is generated and returned to the server.
 
 ### 3. WebSocket Connection
-   - If the access token is valid, the server upgrades the connection to WebSocket.
-   - The client and server can now exchange messages in real-time using the WebSocket connection.
+   - If the token is valid, the server upgrades the connection to WebSocket, enabling real-time message exchange between the client and server.
 
 ## Installation
 
 1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/your-username/web-chat.git
+   git clone https://github.com/paulocvasco/web-chat.git
    cd web-chat
    ```
 
 2. **Setup Environment Variables**:
    - Create a `.env` file based on `.env.example`.
-   - Add your configuration values, such as authorization service URLs and API keys.
+   - Include configuration values for your authorization service, SQL database connection, and any other settings.
 
 3. **Build and Run the Application**:
    ```bash
-   docker-compose up --build
+   docker compose up --build
    ```
 
 ## Usage
@@ -80,8 +85,10 @@ The overall architecture of the web-chat application includes a client interface
 
 ## Technologies Used
 
-- **Go**: Server and WebSocket handling.
-- **JavaScript/HTML/CSS**: Client-side user interface.
-- **Docker**: Containerized deployment of the application and its services.
-- **WebSocket**: Real-time messaging between clients.
-- **Authorization Service**: Validates credentials and manages access tokens.
+- **Go**: Used for server-side programming, WebSocket handling, and API endpoints.
+- **JavaScript/HTML/CSS**: Client-side interface for chat and authentication.
+- **Docker**: Containerizes the application and its services for easy deployment and management.
+- **WebSocket**: Enables real-time messaging between clients.
+- **SQL Database**: Stores client information with password hashing using PBKDF2.
+- **Authorization Service**: Manages user authentication and access tokens.
+- **Internal Network (Docker)**: Ensures isolated communication between the Chat, Authorization, and SQL services.
