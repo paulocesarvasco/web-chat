@@ -20,10 +20,28 @@ type request struct {
 	request *http.Request
 }
 
-func NewPostRequest(ctx context.Context, url string, payload any) (*request, error) {
-	rawPayload, err := json.Marshal(payload)
+func NewGetRequest(ctx context.Context, url string) (*request, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
+	}
+	return &request{
+		client:  defaultHTTPClient(),
+		request: req,
+	}, nil
+}
+
+func NewPostRequest(ctx context.Context, url string, payload any) (*request, error) {
+	var rawPayload []byte
+	switch p := payload.(type) {
+	case []byte:
+		rawPayload = p
+	default:
+		rp, err := json.Marshal(p)
+		if err != nil {
+			return nil, err
+		}
+		rawPayload = rp
 	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost,
 		url, bytes.NewReader(rawPayload))
@@ -40,12 +58,21 @@ func (r *request) AddBasicAuth(user, pass string) {
 	r.request.SetBasicAuth(user, pass)
 }
 
+func (r *request) AddAuthorizationToken(token string) {
+	r.request.Header.Set("Authorization", token)
+}
+
+func (r *request) AddContentTypeJSON() {
+	r.request.Header.Set("Content-Type", "application/json")
+}
+
 func (r *request) Execute() (int, []byte) {
 	res, err := r.client.Do(r.request)
 	if err != nil {
 		log.Print("failed to execute request: ", err)
 		return http.StatusInternalServerError, []byte(err.Error())
 	}
+	defer res.Body.Close()
 	rawPayload, err := io.ReadAll(res.Body)
 	if err != nil {
 		log.Print("failed to decode response payload: ", err)
